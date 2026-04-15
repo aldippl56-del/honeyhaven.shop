@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍯 HONEY HAVEN SHOP | toko kebutuhan jb</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #080503;
+            background-image: radial-gradient(circle at 20% 30%, #1f1408 0%, #050201 100%);
+            color: #f5e6d3;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
+        }
+
+        #page-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a0f06 0%, #030101 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 99999; transition: opacity 1s ease-out, visibility 1s; pointer-events: none;
+        }
+        .loader-content { text-align: center; }
+        .loader-text {
+            font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 700;
+            letter-spacing: 15px; color: #f5d547; text-shadow: 0 0 40px #ffbf00;
+            animation: textGlow 2s infinite alternate;
+        }
+        .loader-sub {
+            font-family: 'Great Vibes', cursive; color: #eebb55; font-size: 2rem;
+            text-shadow: 0 0 20px #daa520; margin-bottom: 50px;
+        }
+        @keyframes textGlow {
+            from { text-shadow: 0 0 30px #ffd700; }
+            to { text-shadow: 0 0 60px #ffaa00; }
+        }
+        .progress-container { width: 350px; }
+        .progress-bar {
+            width: 100%; height: 6px; background: #2a1a0a; border-radius: 20px;
+            overflow: hidden; border: 1px solid #c9a23d;
+        }
+        .progress-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #daa520, #ffd700); box-shadow: 0 0 20px #ffbf00;
+        }
+        .progress-text { color: #eebb55; margin-top: 15px; font-size: 1.3rem; }
+        body.loaded #page-loader { opacity: 0; visibility: hidden; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+            background: #1a1006ee; backdrop-filter: blur(10px);
+            border-top: 2px solid #daa520; display: flex; z-index: 1000;
+            box-shadow: 0 -5px 30px #00000080;
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; color: #a08050; text-decoration: none;
+            transition: all 0.3s; gap: 4px; cursor: pointer;
+            background: none; border: none;
+        }
+        .nav-item.active { color: #f5d547; text-shadow: 0 0 15px #ffbf00; }
+        .nav-icon { font-size: 1.8rem; }
+        .nav-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .wrapper { max-width: 1400px; margin: 0 auto; padding: 20px 20px 20px; width: 100%; }
+
+        .shop-header { text-align: center; margin-bottom: 20px; }
+        .shop-name {
+            font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 700;
+            color: #f5d547; text-shadow: 0 0 30px #ffbf00; letter-spacing: 8px;
+        }
+        .shop-tagline { font-family: 'Great Vibes', cursive; font-size: 1.8rem; color: #eebb55; }
+        .divider { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
+        .divider-line { width: 100px; height: 1px; background: linear-gradient(90deg, transparent, #daa520, transparent); }
+        .divider-icon { color: #f5d547; }
+
+        .page-header { text-align: center; margin: 20px 0 30px; }
+        .page-title { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; color: #f5d547; }
+        .page-subtitle { color: #c9a23d; font-size: 1rem; }
+
+        .banner-container {
+            margin: 15px 0 30px; border-radius: 40px 10px 40px 10px; overflow: hidden;
+            border: 2px solid #c9a23d; box-shadow: 0 30px 40px -15px #000000;
+        }
+        .custom-banner { width: 100%; display: block; }
+
+        .search-container {
+            margin: 20px 0 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #daa520;
+            font-size: 1.2rem;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            background: #1a1006ee;
+            border: 2px solid #c9a23d;
+            border-radius: 50px;
+            color: #f5e6d3;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #f5d547;
+            box-shadow: 0 0 20px #ffbf0066;
+            background: #1f1408;
+        }
+        .search-input::placeholder {
+            color: #a08050;
+            font-style: italic;
+        }
+        .search-clear {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a08050;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: none;
+        }
+        .search-clear:hover { color: #f5d547; }
+
+        .trending-section {
+            margin: 30px 0 20px;
+        }
+        .trending-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .trending-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffd966;
+            text-shadow: 0 0 20px #ffbf00;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .trending-badge {
+            background: linear-gradient(145deg, #ff6347, #cc4030);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px #ff634766;
+        }
+        .trending-subtitle {
+            color: #c9a23d;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        .trending-card {
+            background: linear-gradient(145deg, #1f1408, #140c04);
+            border: 1px solid #c9a23d;
+            border-radius: 30px 10px 30px 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .trending-card:hover {
+            transform: translateY(-8px);
+            border-color: #f5d547;
+            box-shadow: 0 20px 30px -10px #000000, 0 0 30px #ffbf0033;
+        }
+        .trending-rank {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #daa520;
+            color: #1a1006;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px #ffbf00;
+        }
+        .trending-image {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 20px 5px 20px 5px;
+            border: 2px solid #c9a23d;
+            margin-bottom: 10px;
+        }
+        .trending-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f5d547;
+            margin-bottom: 5px;
+        }
+        .trending-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffd966;
+        }
+        .trending-empty {
+            text-align: center;
+            color: #a08050;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 600;
+            margin: 40px 0 25px; padding-left: 20px; color: #f5d547;
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .product-card {
+            background: linear-gradient(145deg, #1f1408, #140c04); border: 1px solid #c9a23d;
+            border-radius: 40px 15px 40px 15px; padding: 25px 15px;
+            box-shadow: 0 20px 40px -12px #000000; transition: all 0.3s;
+            text-align: center; display: flex; flex-direction: column; position: relative;
+        }
+        .product-card:hover { transform: translateY(-10px); border-color: #f5d547; }
+        .product-image {
+            width: 100%; aspect-ratio: 1/1; object-fit: cover;
+            border-radius: 30px 10px 30px 10px; border: 2px solid #c9a23d;
+            margin-bottom: 15px; background: #1f1408;
+        }
+        .product-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; color: #f5d547; }
+        .product-desc { color: #d4c4a8; margin: 8px 0; font-size: 0.85rem; flex-grow: 1; }
+        .price { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: #ffd966; margin: 10px 0; }
+        .order-button {
+            background: linear-gradient(145deg, #5a4518, #3a2810); border: 1px solid #f5d547;
+            color: #f5e6d3; padding: 12px; font-size: 1rem; font-weight: 500;
+            border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #2a1a0a;
+            transition: 0.1s; text-transform: uppercase;
+        }
+        .order-button:active { transform: translateY(6px); box-shadow: 0 0 0 #2a1a0a; }
+
+        .no-result {
+            text-align: center;
+            color: #c9a23d;
+            font-size: 1.2rem;
+            padding: 40px;
+            display: none;
+        }
+
+        .join-section { margin: 50px 0 30px; text-align: center; }
+        .join-button {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: linear-gradient(145deg, #2a1a0a, #140c04); padding: 18px 40px;
+            border-radius: 80px; border: 2px solid #daa520; color: #f5d547;
+            text-decoration: none; font-size: 1.3rem; font-weight: 500;
+            box-shadow: 0 10px 0 #1a0f06; transition: 0.1s;
+        }
+        .join-button:active { transform: translateY(10px); box-shadow: 0 0 0 #1a0f06; }
+        .admin-contact {
+            margin-top: 30px; font-size: 1.1rem; background: #1a1006ee;
+            display: inline-block; padding: 12px 35px; border-radius: 60px;
+            border: 1px solid #c9a23d;
+        }
+        .admin-number { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: #ffd966; margin-left: 15px; }
+
+        .mascot-wrapper {
+            position: fixed; bottom: 85px; right: 20px; z-index: 999;
+            cursor: pointer; filter: drop-shadow(0 0 30px #ffbf004d);
+            text-align: center; transition: filter 0.3s;
+            animation: floatSmooth 8s cubic-bezier(0.45, 0.05, 0.2, 0.99) infinite;
+        }
+        .mascot-wrapper:hover { filter: drop-shadow(0 0 50px #ffd700); }
+        .mascot-image { width: 120px; height: 120px; object-fit: contain; }
+        .mascot-name { font-family: 'Great Vibes', cursive; color: #ffd966; font-size: 1.6rem; }
+        .mascot-sub { font-size: 0.65rem; color: #eebb55; text-transform: uppercase; }
+
+        @keyframes floatSmooth {
+            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            15% { transform: translateY(-15px) translateX(-5px) rotate(-2deg); }
+            30% { transform: translateY(-25px) translateX(3px) rotate(2deg); }
+            45% { transform: translateY(-10px) translateX(-8px) rotate(-3deg); }
+            60% { transform: translateY(-30px) translateX(5px) rotate(2deg); }
+            75% { transform: translateY(-18px) translateX(-3px) rotate(-1deg); }
+            90% { transform: translateY(-8px) translateX(6px) rotate(1deg); }
+            100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+        }
+
+        .notification-list, .testimoni-list { max-width: 600px; margin: 0 auto; }
+        .notification-item, .testimoni-item {
+            background: #1a1006ee; border: 1px solid #c9a23d; border-radius: 20px;
+            padding: 15px 20px; margin-bottom: 15px; backdrop-filter: blur(5px);
+        }
+        .notification-item { display: flex; gap: 15px; }
+        .testimoni-item { position: relative; }
+        .notification-icon, .testimoni-icon { font-size: 2rem; }
+        .notification-content, .testimoni-content { flex: 1; }
+        .notification-title, .testimoni-nama { color: #f5d547; font-weight: 600; }
+        .notification-desc, .testimoni-pesan { color: #d4c4a8; font-size: 0.9rem; margin: 8px 0; }
+        .notification-time, .testimoni-tanggal { color: #a08050; font-size: 0.75rem; margin-top: 8px; }
+        .testimoni-badge {
+            position: absolute; top: 15px; right: 15px; padding: 3px 10px;
+            border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+        }
+        .badge-warning { background: #ff8c0033; color: #ffb347; border: 1px solid #ff8c00; }
+        .badge-info { background: #00bfff33; color: #87ceeb; border: 1px solid #00bfff; }
+        .badge-love { background: #ff69b433; color: #ffb6c1; border: 1px solid #ff69b4; }
+
+        .profile-header { text-align: center; margin: 20px 0 30px; }
+        .profile-avatar {
+            width: 100px; height: 100px; background: linear-gradient(145deg, #5a4518, #3a2810);
+            border: 3px solid #daa520; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 15px;
+            font-size: 3.5rem; color: #f5d547;
+        }
+        .profile-name { color: #f5d547; font-size: 1.8rem; }
+        .profile-email { color: #a08050; }
+        .profile-menu { max-width: 500px; margin: 0 auto; }
+        .profile-menu-item {
+            background: #1a1006ee; border: 1px solid #c9a23d; border-radius: 20px;
+            padding: 18px 20px; margin-bottom: 10px; display: flex; align-items: center;
+            gap: 15px; cursor: pointer; transition: all 0.2s;
+        }
+        .profile-menu-item:hover { background: #2a1a0a; border-color: #f5d547; }
+        .menu-icon { font-size: 1.5rem; }
+        .menu-label { flex: 1; color: #f5e6d3; font-weight: 500; }
+        .menu-arrow { color: #daa520; font-size: 1.5rem; }
+        .logout-button {
+            max-width: 500px; margin: 30px auto 0; text-align: center;
+            background: #3a1a1a; border: 1px solid #c97070; border-radius: 20px;
+            padding: 15px; color: #f5d5d5; cursor: pointer; transition: 0.2s;
+        }
+        .logout-button:hover { background: #5a2525; }
+
+        .footer-aldixd { margin-top: 50px; text-align: center; color: #a08050; font-size: 0.85rem; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div id="page-loader">
+        <div class="loader-content">
+            <div class="loader-text">HONEY HAVEN SHOP</div>
+            <div class="loader-sub">toko kebutuhan jb</div>
+            <div class="progress-container">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+        <button class="nav-item" data-page="notifikasi"><span class="nav-icon">🔔</span><span class="nav-label">Notifikasi</span></button>
+        <button class="nav-item" data-page="pesankesan"><span class="nav-icon">💬</span><span class="nav-label">Pesan Admin</span></button>
+        <button class="nav-item" data-page="profil"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></button>
+    </nav>
+
+    <div class="mascot-wrapper" onclick="mascotSpeak()">
+        <img class="mascot-image" src="https://cdn.phototourl.com/free/2026-04-10-42f7b571-1af7-43e3-b776-f36ac2746048.png" alt="Si Manis" onerror="this.src='https://placehold.co/400x400/daa520/1a1006?text=🍯+SI+MANIS+🍯'">
+        <div class="mascot-name">Si Manis</div>
+        <div class="mascot-sub">Maskot Honey Haven Shop</div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+        <div class="wrapper">
+            <div class="shop-header">
+                <div class="shop-name">HONEY HAVEN SHOP</div>
+                <div class="shop-tagline">DIGITAL PRODUK</div>
+                <div class="divider"><div class="divider-line"></div><div class="divider-icon">✦ ✦ ✦</div><div class="divider-line"></div></div>
+            </div>
+            <div class="banner-container">
+                <img class="custom-banner" src="https://cdn.phototourl.com/free/2026-04-15-6fab327d-1a57-49d3-9cfa-dc0ec289567a.png" alt="Banner">
+            </div>
+            
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Cari produk madu premium yang kamu butuhkan..." onkeyup="searchProduct()">
+                    <span class="search-clear" id="searchClear" onclick="clearSearch()">✕</span>
+                </div>
+            </div>
+            
+            <div class="trending-section" id="trendingSection">
+                <div class="trending-header">
+                    <div>
+                        <div class="trending-title">
+                            <span>🔥</span> PALING DICARI
+                            <span class="trending-badge">HOT</span>
+                        </div>
+                        <div class="trending-subtitle">Rekomendasi Terbaik • Koleksi produk paling diminati</div>
+                    </div>
+                </div>
+                <div class="trending-grid" id="trendingContainer"></div>
+            </div>
+            
+            <div class="section-title"><span>🍯</span> Semua Produk</div>
+            <div class="product-grid" id="productContainer"></div>
+            <div class="no-result" id="noResult">🍯 Produk tidak ditemukan... Coba kata kunci lain!</div>
+            
+            <div class="join-section">
+                <a href="#" class="join-button" onclick="openSaluran()">📢 JOIN SALURAN RESMI</a>
+                <div class="admin-contact">📞 Order via WhatsApp <span class="admin-number" id="adminNumberDisplay">+62 812-3456-7890</span></div>
+            </div>
+            <div class="footer-aldixd">© 2026 HONEY HAVEN SHOP — TOKO TERBAIK<br>TERPERCAYA DAN AMANAH</div>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI PAGE -->
+    <div class="page" id="page-notifikasi">
+        <div class="wrapper">
+            <div class="page-header"><h1 class="page-title">🔔 NOTIFIKASI</h1><p class="page-subtitle">Info promo & update terbaru</p></div>
+            <div class="notification-list">
+                <div class="notification-item"><div class="notification-icon">🔫</div><div class="notification-content"><div class="notification-title">Jasa bikin poster ft cs RESMI</div><div class="notification-desc">Logo jb sudah ready kak</div><div class="notification-time">12 April</div></div></div>
+                <div class="notification-item"><div class="notification-icon">🔫</div><div class="notification-content"><div class="notification-title">Stok Baru Tersedia!</div><div class="notification-desc">Jasa Edik Sudah ready!</div><div class="notification-time">12 April</div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PESAN & KESAN PAGE -->
+    <div class="page" id="page-pesankesan">
+        <div class="wrapper">
+            <div class="page-header">
+                <h1 class="page-title">💬 PESAN DARI ADMIN</h1>
+                <p class="page-subtitle">Peringatan, Dari Admin</p>
+            </div>
+            <div class="testimoni-list" id="testimoniContainer"></div>
+        </div>
+    </div>
+
+    <!-- PROFIL PAGE -->
+    <div class="page" id="page-profil">
+        <div class="wrapper">
+            <div class="profile-header"><div class="profile-avatar">👤</div><h2 class="profile-name">Pelanggan Setiac</h2><p class="profile-email">havenshophoney@gmail.com</p></div>
+            <div class="profile-menu">
+                <div class="profile-menu-item" onclick="alert('📞 Hubungi Admin: +62 819 5826 2408')"><span class="menu-icon">📞</span><span class="menu-label">Hubungi Admin</span><span class="menu-arrow">›</span></div>
+                <div class="profile-menu-item" onclick="openSaluran()"><span class="menu-icon">📢</span><span class="menu-label">Saluran Resmi</span><span class="menu-arrow">›</span></div>
+                <div class="profile-menu-item" onclick="alert('ℹ️ Honey Haven Shop v1.1.0\nPremium Honey Since 2026')"><span class="menu-icon">ℹ️</span><span class="menu-label">Tentang Aplikasi</span><span class="menu-arrow">›</span></div>
+            </div>
+            <div class="logout-button" onclick="alert('👋 Sampai jumpa lagi!')">🚪 Keluar</div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_NUMBER = "6281958262408";
+        
+        const products = [
+            { id:1, name:"JASA EDIT QRIS", desc:"Keuntugan, bisa req warna,bisa req karakter,bisa req latar belakang", price:"Rp 5.000", image:"https://cdn.phototourl.com/free/2026-04-15-e3c88cf9-6828-4d4e-bde3-6ce86a158ee9.png" },
+            { id:2, name:"Nokos Indo", desc:"", price:"Rp 4.000", image:"https://cdn.phototourl.com/free/2026-04-15-53572b52-7b94-414d-a78d-42ef3fbd27a8.jpg" },
+            { id:3, name:"alight motion", desc:"Keuntugan, semua efek terbuka, anti bug, anti leg", price:"Rp 5.000", image:"https://cdn.phototourl.com/free/2026-04-15-679de4ec-0586-4d69-9477-a4fa44fe2f6d.jpg" },
+            { id:4, name:"Capcut Prem", desc:"Keuntugan, semua efek terbuka, anti leg, anti iklan", price:"Rp 15.000", image:"https://cdn.phototourl.com/free/2026-04-15-6fc2d36b-1c91-48d0-856d-4cc8e2f0d499.jpg" },
+            { id:5, name:"Canva Prem", desc:"Keluar, template semua terbuka, semua efek terbuka", price:"Rp 15.000", image:"https://cdn.phototourl.com/free/2026-04-15-6ce0355e-5635-48be-a0e1-a6b3affde9df.jpg" },
+            { id:6, name:"JASA PEMBUATAN POSTER", desc:"poster ft cs, poster isian ", price:"Rp 15.000", image:"https://cdn.phototourl.com/free/2026-04-15-03b51e52-97b3-41ed-acc7-55a4d528196d.png" },
+            { id:7, name:"LOGO JB", desc:"", price:"Rp 3.000", image:"https://cdn.phototourl.com/free/2026-04-15-a78b4de9-2d1d-4b0b-9b1e-6eb0e8f80d58.png" },
+            { id:8, name:"LOGO JB", desc:"https://cdn.phototourl.com/free/2026-04-15-d798d4b4-3b89-4ac1-ad8a-a285bfb32b61.png", price:"Rp 3.000", image:"https://cdn.phototourl.com/free/2026-04-15-d798d4b4-3b89-4ac1-ad8a-a285bfb32b61.png" }
+        ];
+
+        const testimoniData = [
+            { nama: "Admin Honey", pesan: "disini di Kerjakan secara pelan dan sesuai anterian!", tipe: "warning", tanggal: "10 April 2026" },
+            { nama: "Admin Honey", pesan: "di toko mimin sudah terpercaya dan amanah 100%", tipe: "warning", tanggal: "12 April 2026" },
+            { nama: "Admin Honey", pesan: "stok logo jb sudah tersedia kembali ya!", tipe: "warning", tanggal: "14 April 2026" },
+            { nama: "Admin Honey", pesan: "cuman disini barang lengkap dan ada garansi nya!!", tipe: "warning", tanggal: "13 April 2026" }
+        ];
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 2;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = progress + '%';
+            if (progress >= 100) { clearInterval(interval); setTimeout(() => document.body.classList.add('loaded'), 300); }
+        }, 50);
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + item.dataset.page).classList.add('active');
+            });
+        });
+
+        function renderTrending() {
+            const trending = products.slice(0, 4);
+            const container = document.getElementById('trendingContainer');
+            if (trending.length === 0) { container.innerHTML = '<div class="trending-empty">🍯 Belum ada produk trending</div>'; return; }
+            let html = '';
+            trending.forEach((p, index) => {
+                html += `<div class="trending-card" onclick="orderProduct('${p.name}')">
+                    <span class="trending-rank">#${index + 1}</span>
+                    <img class="trending-image" src="${p.image}" alt="${p.name}">
+                    <div class="trending-name">${p.name}</div>
+                    <div class="trending-price">${p.price}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderProducts(filterText = '') {
+            let html = ''; let found = false;
+            products.forEach(p => {
+                const searchTerm = filterText.toLowerCase();
+                if (filterText === '' || p.name.toLowerCase().includes(searchTerm) || p.desc.toLowerCase().includes(searchTerm)) {
+                    found = true;
+                    html += `<div class="product-card">
+                        <img class="product-image" src="${p.image}" alt="${p.name}">
+                        <h3 class="product-title">${p.name}</h3>
+                        <p class="product-desc">${p.desc}</p>
+                        <div class="price">${p.price}</div>
+                        <button class="order-button" onclick="orderProduct('${p.name}')">📞 ORDER VIA WA</button>
+                    </div>`;
+                }
+            });
+            document.getElementById('productContainer').innerHTML = html || '';
+            document.getElementById('noResult').style.display = found ? 'none' : 'block';
+            document.getElementById('searchClear').style.display = filterText ? 'block' : 'none';
+            document.getElementById('trendingSection').style.display = filterText ? 'none' : 'block';
+        }
+
+        window.searchProduct = function() { renderProducts(document.getElementById('searchInput').value); };
+        window.clearSearch = function() { document.getElementById('searchInput').value = ''; renderProducts(''); };
+
+        function renderTestimoni() {
+            let tHtml = '';
+            testimoniData.forEach(t => {
+                let badgeClass = 'badge-info', badgeText = 'ℹ️ INFO', icon = '💬';
+                if (t.tipe === 'warning') { badgeClass = 'badge-warning'; badgeText = '⚠️ PERINGATAN'; icon = '⚠️'; }
+                if (t.tipe === 'PERINGATAN') { badgeClass = 'badge-warning'; badgeText = '⚠️ PERINGATAN'; icon = '⚠️'; }
+                tHtml += `<div class="testimoni-item"><span class="testimoni-badge ${badgeClass}">${badgeText}</span><div style="display:flex;gap:15px;"><div class="testimoni-icon">${icon}</div><div class="testimoni-content"><div class="testimoni-nama">${t.nama}</div><div class="testimoni-pesan">"${t.pesan}"</div><div class="testimoni-tanggal">📅 ${t.tanggal}</div></div></div></div>`;
+            });
+            document.getElementById('testimoniContainer').innerHTML = tHtml;
+        }
+
+        window.orderProduct = function(name) { window.open(`https://wa.me/${ADMIN_NUMBER}?text=Halo%20Admin%20Honey%20Haven!%20Saya%20tertarik%20pesan%20${encodeURIComponent(name)}.%20Mohon%20info%20selengkapnya.%20🍯`, '_blank'); };
+        window.openSaluran = function() { window.open("https://whatsapp.com/channel/0029Vb6r7t99xVJZjoo7830E", '_blank'); };
+        window.mascotSpeak = function() { alert('🐝 Halo! Aku Si Manis! Selamat datang di Honey Haven! 🍯'); };
+
+        renderTrending(); renderProducts(); renderTestimoni();
+        document.getElementById('adminNumberDisplay').innerText = '+62 819 5826 2408';
+    </script>
+</body>
+</html>
